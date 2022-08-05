@@ -1,0 +1,1 @@
+This is a [CustomJS](https://github.com/samlewis0602/obsidian-custom-js) class with a collection of methods I'm using in my [Dataview](https://github.com/blacksmithgu/obsidian-dataview) scripts in my [Obsidian](https://obsidian.md/) vault for writing prose.
