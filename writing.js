@@ -92,7 +92,7 @@ word-spacing: .2em;
     const result = {};
 
     const currentPage = this.dv.page(currentFilePath);
-    if ([undefined, ''].includes(currentPage.story)) return result;
+    if ([undefined, '', null].includes(currentPage.story)) return result;
 
     const currentStoryProse = this.dv.pages(`#prose and -"templates"`)
       .sort(e => e.order ?? e.file.name)
@@ -113,6 +113,7 @@ word-spacing: .2em;
   displayAdjacentProse(dv) {
     this.init(dv);
     const adjacent = this.getAdjacentProse(dv.currentFilePath);
+    if (Object.keys(adjacent).length === 0) return;
 
     const linkStyle = `
 display: block;
