@@ -11,6 +11,15 @@ class Writing {
     return callback === undefined ? result : result.map(callback);
   }
 
+  isEmpty(value) {
+    if ([undefined, '', null].includes(value)) return true;
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) return value.length === 0;
+      else return (Object.keys(object).length === 0);
+    }
+    return false;
+  }
+
   isCharacterInProse(prosePage, characterPath) {
     return prosePage.pov?.path === characterPath ||
       this.toArrayOption(prosePage.character, character => character?.path)
@@ -48,7 +57,7 @@ word-spacing: .2em;
     const rows = await Promise.all(prose.map(async prosePage => {
       const proseWordCount = await this.getPageWordCount(prosePage);
       storyWordCount += proseWordCount;
-      const status = this.toArrayOption(prosePage.status, a => a.replace('#status/', ''));
+      const status = this.toArrayOption(prosePage.status, a => this.isEmpty(a) ? '' : a.replace('#status/', ''));
       return [
         `<small>${prosePage.order?.toString().replace('/', '.') ?? ''}</small> ${prosePage.file.link}`,
         `<small>${[prosePage.pov, proseWordCount, status].filter(e => e).join(' | ')}</small>`,
@@ -92,7 +101,7 @@ word-spacing: .2em;
     const result = {};
 
     const currentPage = this.dv.page(currentFilePath);
-    if ([undefined, '', null].includes(currentPage.story)) return result;
+    if (this.isEmpty(currentPage.story)) return result;
 
     const currentStoryProse = this.dv.pages(`#prose and -"templates"`)
       .sort(e => e.order ?? e.file.name)
