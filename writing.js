@@ -15,7 +15,7 @@ class Writing {
     if ([undefined, '', null].includes(value)) return true;
     if (typeof value === 'object') {
       if (Array.isArray(value)) return value.length === 0;
-      else return (Object.keys(object).length === 0);
+      else return (Object.keys(value).length === 0);
     }
     return false;
   }
