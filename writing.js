@@ -12,7 +12,7 @@ class Writing {
   }
 
   isEmpty(value) {
-    if ([undefined, '', null].includes(value)) return true;
+    if ([undefined, '', ' ', null].includes(value)) return true;
     if (typeof value === 'object') {
       if (Array.isArray(value)) return value.length === 0;
       else return (Object.keys(value).length === 0);
@@ -57,7 +57,9 @@ word-spacing: .2em;
     const rows = await Promise.all(prose.map(async prosePage => {
       const proseWordCount = await this.getPageWordCount(prosePage);
       storyWordCount += proseWordCount;
-      const status = this.toArrayOption(prosePage.status, a => this.isEmpty(a) ? '' : a.replace('#status/', ''));
+      const status = this.toArrayOption(prosePage.status, a => {
+        return !this.isEmpty(a) && typeof a.replace === 'function' ? a.replace('#status/', '') : '';
+      });
       return [
         `<small>${prosePage.order?.toString().replace('/', '.') ?? ''}</small> ${prosePage.file.link}`,
         `<small>${[prosePage.pov, proseWordCount, status].filter(e => e).join(' | ')}</small>`,
