@@ -48,8 +48,9 @@ display: inline-block;
 margin-left: 1em;
 font-size: 1rem;
 font-weight: 400;  
-opacity: .5;
+opacity: .75;
 word-spacing: .2em;
+color: var(--text-normal);
 `;
 
     const dv = this.dv;
@@ -60,9 +61,10 @@ word-spacing: .2em;
       const status = this.toArrayOption(prosePage.status, a => {
         return !this.isEmpty(a) && typeof a.replace === 'function' ? a.replace('#status/', '') : '';
       });
+      const pov = this.toArrayOption(prosePage.pov).join(', ');
       return [
         `<small>${prosePage.order?.toString().replace('/', '.') ?? ''}</small> ${prosePage.file.link}`,
-        `<small>${[prosePage.pov, proseWordCount, status].filter(e => e).join(' | ')}</small>`,
+        `<small>${[pov, proseWordCount, status].filter(e => e).join(' | ')}</small>`,
         `<small>${prosePage.synopsis ?? '---'}</small>`,
       ];
     }));
