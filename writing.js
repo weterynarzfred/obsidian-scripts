@@ -64,13 +64,13 @@ color: var(--text-normal);
       const pov = this.toArrayOption(prosePage.pov).join(', ');
       return [
         `<small>${prosePage.order?.toString().replace('/', '.') ?? ''}</small> ${prosePage.file.link}`,
-        `<small>${[pov, proseWordCount, status].filter(e => e).join(' | ')}</small>`,
+        `<small>${[pov, proseWordCount, status].filter(e => !this.isEmpty(e)).join(' | ')}</small>`,
         `<small>${prosePage.synopsis ?? '---'}</small>`,
       ];
     }));
     this.init(dv); // calling this again because the function might have been waiting for the character count
     this.dv.header(3, `${title ?? ''}<span style="${titleWordCountStyle}">${storyWordCount} words</span>`);
-    this.dv.table(['name', 'pov/words/status', 'synopsis'], rows);
+    this.dv.table(['name', 'pov | words | status', 'synopsis'], rows);
   }
 
   displayCharacterList(characters, currentStoryProse) {
@@ -96,9 +96,15 @@ color: var(--text-normal);
 
     const characterTable = Object.values(annotatedCharacters)
       .sort((a, b) => a.povCount === b.povCount ? b.characterCount - a.characterCount : b.povCount - a.povCount)
-      .map(annotatedCharacter => `${annotatedCharacter.page.file.link}<span style="display: inline-block; margin-left: 1em; opacity: .5; font-size: .8rem; word-spacing: .2em; font-weight: 400;">(${annotatedCharacter.povCount + annotatedCharacter.characterCount})</span>`);
+      .map(annotatedCharacter => [
+        annotatedCharacter.page.file.link,
+        annotatedCharacter.povCount + annotatedCharacter.characterCount + ' | ' + annotatedCharacter.povCount,
+      ]);
 
-    this.dv.list(characterTable);
+    this.dv.table(
+      ['name', 'chapt. | pov'],
+      characterTable
+    );
   }
 
   getAdjacentProse(currentFilePath) {
