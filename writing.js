@@ -119,6 +119,8 @@ color: var(--text-normal);
 
     if (currentStoryProse.length <= 1) return result;
 
+    result.story = currentPage.story;
+
     const currentIndex = currentStoryProse.values
       .findIndex(e => e.file.path === currentFilePath);
 
@@ -155,7 +157,7 @@ padding-left: .2em;
 
     let content = '<span style="padding-top: 2em; display: flex; justify-content: center;">';
     if (adjacent.prev !== undefined) content += `<span style="${linkStyle}"><span style="${linkLabelStyle}">prev</span>${adjacent.prev.file.link}</span>`;
-    content += `<span style="${linkStyle}"><span style="${linkLabelStyle}">index</span>${this.dv.page('_index.md').file.link}</span>`;
+    content += `<span style="${linkStyle}"><span style="${linkLabelStyle}">index</span>${adjacent.story}</span>`;
     if (adjacent.next !== undefined) content += `<span style="${linkStyle}"><span style="${linkLabelStyle}">next</span>${adjacent.next.file.link}</span>`;
     content += '</span>';
     this.dv.el(
