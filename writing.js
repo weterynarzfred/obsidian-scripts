@@ -26,6 +26,29 @@ class Writing {
         .includes(characterPath);
   }
 
+  isPlacePartOf(placePage, parentPlacePath) {
+    if (this.isEmpty(placePage?.partOf?.path)) return false;
+    if (placePage.partOf.path === parentPlacePath) return true;
+    const partOfPage = this.dv.page(placePage.partOf.path);
+    return this.isPlacePartOf(partOfPage, parentPlacePath);
+  }
+
+  isPlaceInProse(prosePage, currentPlacePath) {
+    if (prosePage.place === undefined) return false;
+
+    const placePaths = this.toArrayOption(prosePage.place, place => place?.path);
+    let found = placePaths.includes(currentPlacePath);
+    if (!found) {
+      const placePages = placePaths.filter(e => !this.isEmpty(e)).map(placePath => this.dv.page(placePath));
+      for (const placePage of placePages) {
+        if (this.isEmpty(placePage?.partOf)) continue;
+        found = this.isPlacePartOf(placePage, currentPlacePath);
+        if (found) break;
+      }
+    }
+    return found;
+  }
+
   _getPageWordCount(page, resolve) {
     const cachedCounts = this.dv.app.plugins.plugins['novel-word-count'].savedData.cachedCounts;
     if (Object.keys(cachedCounts).length === 0) {
@@ -65,12 +88,16 @@ color: var(--text-normal);
       return [
         `<small>${prosePage.order?.toString().replace('/', '.') ?? ''}</small> ${prosePage.file.link}`,
         `<small>${[pov, proseWordCount, status].filter(e => !this.isEmpty(e)).join(' | ')}</small>`,
-        `<small>${prosePage.synopsis ?? '---'}</small>`,
+        `<small style="line-height: 1.2; display: block; opacity: .75;">${prosePage.synopsis ?? '---'}</small>`,
       ];
     }));
     this.init(dv); // calling this again because the function might have been waiting for the character count
     this.dv.header(3, `${title ?? ''}<span style="${titleWordCountStyle}">${storyWordCount} words</span>`);
     this.dv.table(['name', 'pov | words | status', 'synopsis'], rows);
+    this.dv.el(
+      'div',
+      '<div style="padding-bottom: 3em;"></div>'
+    );
   }
 
   displayCharacterList(characters, currentStoryProse) {
@@ -198,6 +225,16 @@ padding-left: .2em;
       .filter(e => this.isCharacterInProse(e, dv.currentFilePath));
 
     this.displayProseTable(currentCharacterProse);
+  }
+
+  async displayPlaceProse(dv) {
+    this.init(dv);
+
+    const currentPlaceProse = this.dv.pages(`#prose and -"templates"`)
+      .sort(e => e.order ?? e.file.name)
+      .filter(e => this.isPlaceInProse(e, dv.currentFilePath));
+
+    this.displayProseTable(currentPlaceProse);
   }
 
   displayStoryProse(dv) {
