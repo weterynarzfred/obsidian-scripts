@@ -52,7 +52,7 @@ class Writing {
   _getPageWordCount(page, resolve) {
     const cachedCounts = this.dv.app.plugins.plugins['novel-word-count'].savedData.cachedCounts;
     if (Object.keys(cachedCounts).length === 0) {
-      setTimeout(this._getPageWordCount.bind(this, page, resolve), 1000);
+      setTimeout(this._getPageWordCount.bind(this, page, resolve), 500);
       return;
     }
 
@@ -111,8 +111,11 @@ color: var(--text-normal);
     });
 
     currentStoryProse.forEach(prosePage => {
-      if (annotatedCharacters[prosePage.pov?.path] !== undefined)
-        annotatedCharacters[prosePage.pov.path].povCount++;
+      const povCharacters = this.toArrayOption(prosePage.pov);
+      povCharacters.forEach(characterLink => {
+        if (annotatedCharacters[characterLink?.path] !== undefined)
+          annotatedCharacters[characterLink.path].povCount++;
+      });
 
       const characters = this.toArrayOption(prosePage.character);
       characters.forEach(characterLink => {
